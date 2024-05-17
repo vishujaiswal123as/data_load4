@@ -20,7 +20,7 @@ def scroller(count):
     elif count == 500:
         count = count*10000
     elif count == 1000:
-        count = count*10000
+        count = count*100000
     else:
         count = count*5000000
     for i in tqdm(range(0, count, 1000)):
@@ -88,7 +88,7 @@ def download_csv_file(data, flage=False):
 
         # download button 1 to download dataframe as csv
         download1 = st.download_button(
-            label="Download data as CSV1",
+            label="Download data as CSV2",
             data=csv,
             file_name='large_df.csv',
             mime='text/csv'
@@ -110,7 +110,7 @@ def download_csv_file(data, flage=False):
 
         # download button 1 to download dataframe as csv
         download2 = st.download_button(
-            label="Download data as CSV2",
+            label="Download data as CSV1",
             data=csv,
             file_name='large_df.csv',
             mime='text/csv'
@@ -125,7 +125,6 @@ def data_scrape2(dataframe):
     data = []
     for i in tqdm(dataframe['video_links']):
         link = youtube+i
-        st.write(link)
         driver.get(link)
         ttt.sleep(2)
         soup = BeautifulSoup(driver.page_source, 'html.parser')
@@ -210,5 +209,4 @@ if final_link and video_count:
                 dataframe = download_csv_file(data_for_download)
 
                 data_for_download2 = data_scrape2(dataframe)
-                # st.write(data_for_download2)
                 download_csv_file(data_for_download2, flage=True)
