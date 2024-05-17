@@ -6,14 +6,19 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 import time as ttt
 from tqdm import tqdm
-
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+import os
+from selenium import webdriver
+from selenium.webdriver import FirefoxOptions
+import sys
 # scroll all data and after run this
 
 # all functions
 
 
 def scroller():
-    for i in tqdm(range(0, 500000, 1000)):
+    for i in tqdm(range(0, 500, 1000)):
         driver.execute_script("window.scrollTo(0, " + str(i) + ")")
         driver.execute_script("(0,"+str(i)+")")
         ttt.sleep(.1)
@@ -54,9 +59,9 @@ def data_scrape(soups):
         data1.append([title, views, time, thumbnail, video_link])
 
     # print(data)
-    data2 = pd.DataFrame(
-        data1, columns=['title', 'views', 'time', 'thumbnail', 'video_link'])
-    data2.to_csv('Youtube_gfg.csv', index=False)
+    # data2 = pd.DataFrame(
+    #     data1, columns=['title', 'views', 'time', 'thumbnail', 'video_link'])
+    # data2.to_csv('Youtube_gfg.csv', index=False)
     return data1
 
 def download_csv_file(data):
@@ -85,18 +90,45 @@ link = 'https://www.youtube.com/'
 # name='gfg'
 # final_link=link+name
 st.title('Scrap and Analyse')
-final_link = 'https://www.youtube.com/@ashishchanchlanivines/videos'
+# final_link = 'https://www.youtube.com/@ashishchanchlanivines/videos'
+
+
+
 final_link = st.text_input('Enter Chennal link')
-driver = webdriver.Edge()
+
+# ttt.sleep(20)
 if final_link:
     but1 = st.button('Scrap Dataset')
     if but1:
-        driver.get(final_link)
-        ttt.sleep(3)
-        scrol = scroller()
-        if scrol == 'end':
-            st.title('Almost Done')
-            soup = BeautifulSoup(driver.page_source, 'html.parser')
-            data_for_download=data_scrape(soup)
-            # download='D:\web_scraping\Youtube_gfg.csv'
-            download_csv_file(data_for_download)
+        with st.echo():
+            from selenium import webdriver
+            from selenium.webdriver.chrome.options import Options
+            from selenium.webdriver.chrome.service import Service
+            from webdriver_manager.chrome import ChromeDriverManager
+            from webdriver_manager.core.os_manager import ChromeType
+        
+            @st.cache_resource
+            def get_driver():
+                return webdriver.Chrome(
+                    service=Service(
+                        ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()
+                    ),
+                    options=options,
+                )
+        
+            options = Options()
+            options.add_argument("--disable-gpu")
+            options.add_argument("--headless")
+        
+            driver = get_driver()
+        
+            # st.code(driver.page_source)
+            driver.get(final_link)
+            ttt.sleep(3)
+            scrol = scroller()
+            if scrol == 'end':
+                st.title('Almost Done')
+                soup = BeautifulSoup(driver.page_source, 'html.parser')
+                data_for_download=data_scrape(soup)
+                # download='D:\web_scraping\Youtube_gfg.csv'
+                download_csv_file(data_for_download)
