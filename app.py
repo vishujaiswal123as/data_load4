@@ -7,7 +7,11 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 import time as ttt
 from tqdm import tqdm
-
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+from webdriver_manager.core.os_manager import ChromeType
 
 # scroll all data and after run this
 
@@ -164,6 +168,21 @@ def data_scrape2(dataframe):
     return data
 
 
+with st.echo():
+    @st.cache_resource
+    def get_driver():
+        return webdriver.Chrome(
+            service=Service(
+                ChromeDriverManager(
+                    chrome_type=ChromeType.CHROMIUM).install()
+            ),
+            options=options,
+        )
+    options = Options()
+    options.add_argument("--disable-gpu")
+    options.add_argument("--headless")
+    driver = get_driver()
+    
 link = 'https://www.youtube.com/'
 st.title('Scrap and Analyse')
 # final_link = 'https://www.youtube.com/@ashishchanchlanivines/videos'
@@ -176,37 +195,16 @@ video_count = st.selectbox('How much videos has chennal', [
 if final_link and video_count:
     but1 = st.button('Scrap Dataset')
     if but1:
-        with st.echo():
-            from selenium import webdriver
-            from selenium.webdriver.chrome.options import Options
-            from selenium.webdriver.chrome.service import Service
-            from webdriver_manager.chrome import ChromeDriverManager
-            from webdriver_manager.core.os_manager import ChromeType
+        st.write('Please wait we are working')
+        driver.get(final_link)
+        ttt.sleep(3)
+        scrol = scroller(video_count)
+        if scrol == 'end':
+            st.title('Almost Done')
 
-            @st.cache_resource
-            def get_driver():
-                return webdriver.Chrome(
-                    service=Service(
-                        ChromeDriverManager(
-                            chrome_type=ChromeType.CHROMIUM).install()
-                    ),
-                    options=options,
-                )
+            soup = BeautifulSoup(driver.page_source, 'html.parser')
+            data_for_download = data_scrape(soup)
+            dataframe = download_csv_file(data_for_download)
 
-            options = Options()
-            options.add_argument("--disable-gpu")
-            options.add_argument("--headless")
-
-            driver = get_driver()
-            st.write('Please wait we are working')
-            driver.get(final_link)
-            ttt.sleep(3)
-            scrol = scroller(video_count)
-            if scrol == 'end':
-                st.title('Almost Done')
-                soup = BeautifulSoup(driver.page_source, 'html.parser')
-                data_for_download = data_scrape(soup)
-                dataframe = download_csv_file(data_for_download)
-
-                data_for_download2 = data_scrape2(dataframe)
-                download_csv_file(data_for_download2, flage=True)
+            data_for_download2 = data_scrape2(dataframe)
+            download_csv_file(data_for_download2, flage=True)
