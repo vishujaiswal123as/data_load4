@@ -178,10 +178,10 @@ with st.echo():
             ),
             options=options,
         )
-    options = Options()
-    options.add_argument("--disable-gpu")
-    options.add_argument("--headless")
-    driver = get_driver()
+options = Options()
+options.add_argument("--disable-gpu")
+options.add_argument("--headless")
+driver = get_driver()
     
 link = 'https://www.youtube.com/'
 st.title('Scrap and Analyse')
