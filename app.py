@@ -202,7 +202,7 @@ if final_link and video_count:
             driver.get(final_link)
             ttt.sleep(3)
             scrol = scroller(video_count)
-            if scrol == 'end' and driver:
+            if scrol == 'end':
                 st.title('Almost Done')
                 soup = BeautifulSoup(driver.page_source, 'html.parser')
                 data_for_download = data_scrape(soup)
