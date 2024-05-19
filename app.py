@@ -1,8 +1,6 @@
-# worki in progress
 import streamlit as st
 import pandas as pd
 import numpy as np
-# import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
 import time as ttt
@@ -12,6 +10,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.core.os_manager import ChromeType
+import pyautogui
 
 # scroll all data and after run this
 
@@ -131,6 +130,8 @@ def data_scrape2(dataframe):
         link = youtube+i
         driver.get(link)
         ttt.sleep(2)
+        pyautogui.moveTo(800,897)
+        pyautogui.click()
         soup = BeautifulSoup(driver.page_source, 'html.parser')
 
         try:
@@ -182,13 +183,12 @@ options = Options()
 options.add_argument("--disable-gpu")
 options.add_argument("--headless")
 driver = get_driver()
-    
+
+# driver=webdriver.Chrome()
 link = 'https://www.youtube.com/'
 st.title('Scrap and Analyse')
-# final_link = 'https://www.youtube.com/@ashishchanchlanivines/videos'
-final_link = st.text_input('Enter Chennal link')
-# driver = webdriver.Chrome()
 
+final_link=st.text_input('paste the chennle link')
 video_count = st.selectbox('How much videos has chennal', [
                            200, 500, 1000, 10000, 50000])
 
@@ -199,12 +199,14 @@ if final_link and video_count:
         driver.get(final_link)
         ttt.sleep(3)
         scrol = scroller(video_count)
-        if scrol == 'end':
+        if scrol == 'end' and driver:
             st.title('Almost Done')
-
             soup = BeautifulSoup(driver.page_source, 'html.parser')
             data_for_download = data_scrape(soup)
-            dataframe = download_csv_file(data_for_download)
-
+            dataframe=download_csv_file(data_for_download)
+           
             data_for_download2 = data_scrape2(dataframe)
-            download_csv_file(data_for_download2, flage=True)
+            # st.write(data_for_download2)
+            download_csv_file(data_for_download2,flage=True)
+
+
